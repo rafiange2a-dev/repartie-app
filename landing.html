@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Répartie — Ne cherche plus tes mots</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --cream:#FFF6FA;
+    --pink-pale:#FFE3EE;
+    --pink:#E8447B;
+    --pink-soft:#FF7FA8;
+    --plum:#5A1F3B;
+    --lavender:#B5457A;
+    --muted:#9C7085;
+    --gold:#FFB86B;
+    --white:#FFFFFF;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html{ scroll-behavior:smooth; }
+  body{
+    font-family:'Inter', sans-serif;
+    color:var(--plum);
+    background:var(--cream);
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3{ font-family:'Fredoka', sans-serif; }
+
+  .wrap{ max-width:1080px; margin:0 auto; padding:0 24px; }
+
+  /* ---------- Nav ---------- */
+  nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(255,246,250,0.85);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(232,68,123,0.1);
+  }
+  .nav-inner{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:16px 24px; max-width:1080px; margin:0 auto;
+  }
+  .logo{ font-family:'Fredoka', sans-serif; font-weight:700; font-size:20px; color:var(--pink); }
+  .nav-cta{
+    background:var(--pink); color:white; border:none; padding:10px 20px;
+    border-radius:999px; font-weight:600; font-size:14px; cursor:pointer;
+    transition:transform .15s ease;
+  }
+  .nav-cta:hover{ transform:translateY(-1px); }
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative;
+    padding:80px 24px 60px;
+    text-align:center;
+    overflow:hidden;
+  }
+  .hero-particles{
+    position:absolute; inset:0; pointer-events:none; z-index:0;
+  }
+  .particle{
+    position:absolute; font-size:20px; opacity:0.35;
+    animation:float 8s ease-in-out infinite;
+  }
+  @keyframes float{
+    0%,100%{ transform:translateY(0) rotate(0deg); }
+    50%{ transform:translateY(-24px) rotate(12deg); }
+  }
+
+  .hero-content{ position:relative; z-index:1; max-width:640px; margin:0 auto; }
+  .hero-badge{
+    display:inline-flex; align-items:center; gap:6px;
+    background:rgba(232,68,123,0.1); color:var(--pink); font-size:12.5px; font-weight:700;
+    padding:7px 16px; border-radius:999px; margin-bottom:20px;
+  }
+  .hero h1{
+    font-size:clamp(32px, 6vw, 52px); font-weight:700; line-height:1.08;
+    background:linear-gradient(90deg, var(--pink), var(--lavender));
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    margin-bottom:16px;
+  }
+  .hero p.lead{
+    font-size:17px; color:var(--muted); line-height:1.6; margin-bottom:32px;
+  }
+  .hero-actions{ display:flex; gap:12px; justify-content:center; flex-wrap:wrap; margin-bottom:12px; }
+  .btn-primary{
+    background:linear-gradient(90deg, var(--pink), var(--pink-soft)); color:white; border:none;
+    padding:15px 30px; border-radius:14px; font-weight:600; font-size:16px; cursor:pointer;
+    box-shadow:0 14px 28px -12px rgba(232,68,123,0.55);
+    transition:transform .15s ease;
+    font-family:'Fredoka', sans-serif;
+  }
+  .btn-primary:hover{ transform:translateY(-2px); }
+  .btn-secondary{
+    background:white; color:var(--pink); border:1px solid rgba(232,68,123,0.25);
+    padding:15px 26px; border-radius:14px; font-weight:600; font-size:15px; cursor:pointer;
+  }
+  .hero-note{ font-size:12.5px; color:var(--muted); }
+
+  /* ---------- Phone mockup with live-typing chat ---------- */
+  .phone{
+    max-width:300px; margin:48px auto 0;
+    background:var(--plum); border-radius:34px; padding:12px;
+    box-shadow:0 30px 60px -20px rgba(90,31,59,0.4);
+  }
+  .phone-screen{
+    background:linear-gradient(180deg, var(--pink-pale), var(--cream));
+    border-radius:24px; padding:18px 14px; min-height:340px;
+    display:flex; flex-direction:column; gap:8px;
+  }
+  .chat-bubble{
+    max-width:80%; padding:10px 14px; border-radius:16px; font-size:13px; line-height:1.4;
+    opacity:0; transform:translateY(8px); animation:bubbleIn .4s ease forwards;
+  }
+  .chat-bubble.her{
+    align-self:flex-start; background:white; color:var(--plum);
+    border-bottom-left-radius:4px;
+  }
+  .chat-bubble.me{
+    align-self:flex-end; background:var(--pink); color:white;
+    border-bottom-right-radius:4px;
+  }
+  @keyframes bubbleIn{ to{ opacity:1; transform:translateY(0); } }
+  .typing-dots{
+    align-self:flex-end; background:var(--pink); border-radius:16px; border-bottom-right-radius:4px;
+    padding:10px 14px; display:flex; gap:4px;
+  }
+  .typing-dots span{
+    width:6px; height:6px; border-radius:50%; background:white; opacity:.6;
+    animation:tdot 1s infinite ease-in-out;
+  }
+  .typing-dots span:nth-child(2){ animation-delay:.15s; }
+  .typing-dots span:nth-child(3){ animation-delay:.3s; }
+  @keyframes tdot{ 0%,80%,100%{ transform:translateY(0);} 40%{ transform:translateY(-4px);} }
+
+  /* ---------- Stats strip ---------- */
+  .stats-strip{
+    display:flex; justify-content:center; gap:48px; flex-wrap:wrap;
+    padding:50px 24px; text-align:center;
+  }
+  .stat{ min-width:120px; }
+  .stat-num{
+    font-family:'Fredoka', sans-serif; font-weight:700; font-size:34px; color:var(--pink);
+  }
+  .stat-label{ font-size:12.5px; color:var(--muted); margin-top:4px; }
+
+  /* ---------- Try it live section ---------- */
+  .try-section{ padding:70px 24px; background:white; }
+  .section-eyebrow{
+    text-align:center; font-size:12px; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--pink); font-weight:700; margin-bottom:10px;
+  }
+  .section-title{
+    text-align:center; font-size:clamp(24px,4vw,34px); font-weight:600; margin-bottom:12px;
+  }
+  .section-sub{
+    text-align:center; color:var(--muted); font-size:15px; max-width:480px; margin:0 auto 40px;
+  }
+
+  .try-card{
+    max-width:520px; margin:0 auto; background:var(--pink-pale); border-radius:24px; padding:24px;
+    border:1px solid rgba(232,68,123,0.15);
+  }
+  .try-card textarea{
+    width:100%; min-height:80px; border-radius:14px; border:1px solid rgba(232,68,123,0.2);
+    padding:12px 14px; font-family:'Inter',sans-serif; font-size:14px; resize:vertical; outline:none;
+    background:white; color:var(--plum);
+  }
+  .try-card textarea:focus{ border-color:var(--pink); }
+  .try-tones{ display:flex; gap:8px; flex-wrap:wrap; margin:14px 0; }
+  .try-tone-chip{
+    padding:7px 14px; border-radius:999px; border:1px solid rgba(232,68,123,0.25);
+    background:white; color:var(--muted); font-size:12.5px; font-weight:600; cursor:pointer;
+    transition:all .15s ease;
+  }
+  .try-tone-chip.active{ background:var(--pink); border-color:var(--pink); color:white; }
+  .try-btn{
+    width:100%; background:var(--pink); color:white; border:none; padding:13px; border-radius:12px;
+    font-weight:600; font-size:15px; cursor:pointer; font-family:'Fredoka',sans-serif;
+    transition:opacity .15s ease;
+  }
+  .try-btn:disabled{ opacity:.6; cursor:default; }
+  .try-results{ margin-top:16px; display:flex; flex-direction:column; gap:8px; }
+  .try-reply{
+    background:white; border-radius:14px; padding:11px 14px; font-size:14px; color:var(--plum);
+    border-left:3px solid var(--pink);
+  }
+  .try-loading{ display:flex; gap:5px; justify-content:center; padding:10px; }
+  .try-loading span{ width:7px; height:7px; border-radius:50%; background:var(--pink); animation:tdot 1s infinite ease-in-out; }
+  .try-loading span:nth-child(2){ animation-delay:.15s; }
+  .try-loading span:nth-child(3){ animation-delay:.3s; }
+  .try-hint{ text-align:center; font-size:12px; color:var(--muted); margin-top:12px; }
+
+  /* ---------- Features ---------- */
+  .features{ padding:70px 24px; }
+  .feature-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:20px;
+    max-width:1000px; margin:0 auto;
+  }
+  .feature-card{
+    background:white; border-radius:20px; padding:26px 22px; border:1px solid rgba(232,68,123,0.1);
+    opacity:0; transform:translateY(20px); transition:opacity .5s ease, transform .5s ease, box-shadow .2s ease;
+  }
+  .feature-card.visible{ opacity:1; transform:translateY(0); }
+  .feature-card:hover{ box-shadow:0 20px 40px -24px rgba(232,68,123,0.4); }
+  .feature-icon{ font-size:26px; margin-bottom:12px; display:block; }
+  .feature-title{ font-family:'Fredoka', sans-serif; font-weight:600; font-size:16px; margin-bottom:6px; }
+  .feature-text{ font-size:13.5px; color:var(--muted); line-height:1.5; }
+
+  /* ---------- Testimonials ---------- */
+  .testi-section{ padding:70px 0; background:var(--pink-pale); overflow:hidden; }
+  .testi-track{
+    display:flex; gap:18px; width:max-content;
+    animation:scrollTesti 28s linear infinite;
+  }
+  .testi-section:hover .testi-track{ animation-play-state:paused; }
+  @keyframes scrollTesti{
+    from{ transform:translateX(0); }
+    to{ transform:translateX(-50%); }
+  }
+  .testi-card{
+    background:white; border-radius:18px; padding:20px; width:260px; flex-shrink:0;
+    border:1px solid rgba(232,68,123,0.12);
+  }
+  .testi-stars{ color:var(--gold); font-size:14px; margin-bottom:8px; }
+  .testi-text{ font-size:13.5px; color:var(--plum); line-height:1.5; margin-bottom:10px; }
+  .testi-name{ font-size:12.5px; font-weight:700; color:var(--pink); }
+
+  /* ---------- Pricing ---------- */
+  .pricing{ padding:70px 24px; }
+  .pricing-toggle{
+    display:flex; justify-content:center; align-items:center; gap:12px; margin-bottom:36px;
+  }
+  .toggle-switch{
+    width:46px; height:26px; background:rgba(232,68,123,0.2); border-radius:999px; position:relative;
+    cursor:pointer; transition:background .2s ease;
+  }
+  .toggle-switch.on{ background:var(--pink); }
+  .toggle-knob{
+    position:absolute; top:3px; left:3px; width:20px; height:20px; border-radius:50%; background:white;
+    transition:transform .2s ease; box-shadow:0 2px 6px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on .toggle-knob{ transform:translateX(20px); }
+  .toggle-label{ font-size:13px; font-weight:600; color:var(--muted); }
+  .toggle-label.active{ color:var(--plum); }
+  .save-badge{
+    background:var(--gold); color:var(--plum); font-size:11px; font-weight:700;
+    padding:3px 8px; border-radius:999px; margin-left:4px;
+  }
+
+  .pricing-grid{
+    display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:20px;
+    max-width:760px; margin:0 auto;
+  }
+  .price-card{
+    background:white; border-radius:22px; padding:28px 24px; border:1px solid rgba(232,68,123,0.12);
+    text-align:center;
+  }
+  .price-card.featured{
+    background:linear-gradient(160deg, var(--pink), var(--lavender)); color:white;
+    transform:scale(1.03);
+    box-shadow:0 24px 50px -20px rgba(232,68,123,0.5);
+  }
+  .price-plan{ font-family:'Fredoka', sans-serif; font-weight:600; font-size:17px; margin-bottom:6px; }
+  .price-amount{ font-family:'Fredoka', sans-serif; font-weight:700; font-size:36px; margin-bottom:2px; }
+  .price-period{ font-size:12.5px; opacity:.75; margin-bottom:18px; }
+  .price-list{ list-style:none; text-align:left; font-size:13.5px; line-height:2; margin-bottom:20px; }
+  .price-card .btn-primary, .price-card .btn-secondary{ width:100%; }
+  .price-card.featured .btn-primary{ background:white; color:var(--pink); box-shadow:none; }
+
+  /* ---------- FAQ ---------- */
+  .faq{ padding:70px 24px; background:white; }
+  .faq-list{ max-width:640px; margin:0 auto; }
+  .faq-item{ border-bottom:1px solid rgba(232,68,123,0.15); }
+  .faq-q{
+    width:100%; background:none; border:none; padding:18px 4px; text-align:left;
+    font-family:'Fredoka', sans-serif; font-weight:600; font-size:15.5px; color:var(--plum);
+    cursor:pointer; display:flex; justify-content:space-between; align-items:center;
+  }
+  .faq-icon{ transition:transform .25s ease; color:var(--pink); font-size:18px; }
+  .faq-item.open .faq-icon{ transform:rotate(45deg); }
+  .faq-a{
+    max-height:0; overflow:hidden; transition:max-height .3s ease;
+    font-size:14px; color:var(--muted); line-height:1.6;
+  }
+  .faq-item.open .faq-a{ max-height:200px; padding-bottom:18px; }
+
+  /* ---------- Signup ---------- */
+  .signup{
+    padding:80px 24px; text-align:center;
+    background:radial-gradient(ellipse at top, var(--pink-pale), var(--cream));
+  }
+  .signup-card{
+    max-width:460px; margin:0 auto; background:white; border-radius:24px; padding:36px 28px;
+    box-shadow:0 30px 60px -30px rgba(232,68,123,0.4);
+  }
+  .signup-card h2{ font-size:24px; margin-bottom:8px; }
+  .signup-card p{ color:var(--muted); font-size:14px; margin-bottom:22px; }
+  .signup-form{ display:flex; flex-direction:column; gap:10px; }
+  .signup-form input{
+    padding:13px 16px; border-radius:12px; border:1px solid rgba(232,68,123,0.25);
+    font-size:14px; font-family:'Inter',sans-serif; outline:none;
+  }
+  .signup-form input:focus{ border-color:var(--pink); }
+  .signup-form .error-text{ color:#C0392B; font-size:12.5px; text-align:left; display:none; }
+  #signupSuccess{ display:none; }
+  #signupSuccess .checkmark{
+    width:56px; height:56px; border-radius:50%; background:var(--pink); color:white;
+    display:flex; align-items:center; justify-content:center; font-size:26px; margin:0 auto 14px;
+    animation:pop .4s ease;
+  }
+  @keyframes pop{ 0%{ transform:scale(0);} 70%{ transform:scale(1.15);} 100%{ transform:scale(1);} }
+
+  /* ---------- Swipe to confirm ---------- */
+  .swipe-track{
+    position:relative;
+    width:100%; height:54px;
+    background:var(--pink-pale);
+    border:1px solid rgba(232,68,123,0.25);
+    border-radius:999px;
+    overflow:hidden;
+    user-select:none;
+    touch-action:none;
+    margin-top:4px;
+  }
+  .swipe-fill{
+    position:absolute; top:0; left:0; height:100%;
+    background:linear-gradient(90deg, var(--pink), var(--pink-soft));
+    width:54px;
+    border-radius:999px;
+    transition:width .05s linear;
+  }
+  .swipe-label{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13.5px; font-weight:600; color:var(--pink);
+    pointer-events:none;
+    transition:opacity .15s ease;
+  }
+  .swipe-track.completed .swipe-label{ color:white; }
+  .swipe-thumb{
+    position:absolute; top:3px; left:3px;
+    width:48px; height:48px; border-radius:50%;
+    background:white; color:var(--pink);
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px; font-weight:700;
+    box-shadow:0 4px 10px rgba(232,68,123,0.35);
+    cursor:grab;
+    transition:left .05s linear;
+  }
+  .swipe-thumb:active{ cursor:grabbing; }
+  .swipe-track.completed .swipe-thumb{
+    background:white; color:var(--pink);
+    animation:swipeDone .3s ease;
+  }
+  @keyframes swipeDone{ 0%{ transform:scale(1);} 50%{ transform:scale(1.15);} 100%{ transform:scale(1);} }
+  .swipe-track.snapping .swipe-thumb{ transition:left .25s ease; }
+  .swipe-track.snapping .swipe-fill{ transition:width .25s ease; }
+
+  footer{
+    padding:36px 24px; text-align:center; color:var(--muted); font-size:12.5px;
+  }
+  .footer-socials{ display:flex; justify-content:center; gap:14px; margin-bottom:14px; }
+  .footer-socials a{
+    width:36px; height:36px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:var(--pink-pale); color:var(--pink); transition:background .15s ease, transform .1s ease;
+  }
+  .footer-socials a:hover{ background:var(--pink); color:white; transform:translateY(-2px); }
+
+  .reveal{ opacity:0; transform:translateY(24px); transition:opacity .6s ease, transform .6s ease; }
+  .reveal.visible{ opacity:1; transform:translateY(0); }
+
+  @media (max-width:600px){
+    .price-card.featured{ transform:none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <div class="logo">💌 Répartie</div>
+    <button class="nav-cta" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">S'inscrire</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-particles" id="particles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">✨ Nouveau · Analyse de vibe en temps réel</div>
+    <h1>Ne cherche plus tes mots.</h1>
+    <p class="lead">Colle son message, choisis un ton, reçois 3 réponses qui claquent. Générées par IA, adaptées à chaque conversation.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">Créer mon compte gratuit</button>
+      <button class="btn-secondary" onclick="document.getElementById('try').scrollIntoView({behavior:'smooth'})">Essayer sans compte</button>
+    </div>
+    <div class="hero-note">Gratuit pour commencer · Aucune carte requise</div>
+  </div>
+
+  <div class="phone">
+    <div class="phone-screen" id="phoneScreen"></div>
+  </div>
+</section>
+
+<section class="try-section" id="try">
+  <div class="section-eyebrow">Essaie maintenant</div>
+  <h2 class="section-title">Teste-le, là, tout de suite</h2>
+  <p class="section-sub">Colle un vrai message que tu as reçu et regarde ce que Répartie te propose.</p>
+
+  <div class="try-card">
+    <textarea id="tryInput" placeholder="Ex : Haha t'es bizarre toi 😂"></textarea>
+    <div class="try-tones">
+      <button class="try-tone-chip active" data-tone="Charmeur">Charmeur</button>
+      <button class="try-tone-chip" data-tone="Drôle">Drôle</button>
+      <button class="try-tone-chip" data-tone="Direct">Direct</button>
+      <button class="try-tone-chip" data-tone="Mystérieux">Mystérieux</button>
+    </div>
+    <button class="try-btn" id="tryBtn">Générer 3 réponses</button>
+    <div class="try-results" id="tryResults"></div>
+    <div class="try-hint">3 essais gratuits sans inscription</div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="section-eyebrow">Fonctionnalités</div>
+  <h2 class="section-title">Tout ce qu'il te faut pour ne plus bloquer</h2>
+  <div class="feature-grid">
+    <div class="feature-card reveal">
+      <span class="feature-icon">📸</span>
+      <div class="feature-title">Analyse de capture</div>
+      <div class="feature-text">Envoie une capture d'écran de la conversation, l'IA comprend le contexte direct.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">🔍</span>
+      <div class="feature-title">Détecteur de vibe</div>
+      <div class="feature-text">Comprends le ton réel du message reçu avant même de répondre.</div>
+    </div>
+    <div class="feature-card reveal">
+      <span class="feature-icon">💬</span>
+      <div class="feature-title">Mode accroche</div>
+      <div class="feature-text">Pas de message reçu ? Génère un premier message qui donne envie de répondre.</div>
+    </div>
+  </div>
+</section>
+
+<section class="pricing">
+  <div class="section-eyebrow">Tarifs</div>
+  <h2 class="section-title">Commence gratuitement</h2>
+  <p class="section-sub">Passe en Premium quand tu veux, annule quand tu veux.</p>
+
+  <div class="pricing-toggle">
+    <span class="toggle-label active" id="labelMonthly">Mensuel</span>
+    <div class="toggle-switch" id="pricingToggle"><div class="toggle-knob"></div></div>
+    <span class="toggle-label" id="labelYearly">Annuel <span class="save-badge">-20%</span></span>
+  </div>
+
+  <div class="pricing-grid">
+    <div class="price-card reveal">
+      <div class="price-plan">Gratuit</div>
+      <div class="price-amount">0€</div>
+      <div class="price-period">pour toujours</div>
+      <ul class="price-list">
+        <li>✓ 3 réponses / jour</li>
+        <li>✓ 4 tons disponibles</li>
+        <li>✓ Parrainage inclus</li>
+      </ul>
+      <button class="btn-secondary" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">Commencer</button>
+    </div>
+    <div class="price-card featured reveal">
+      <div class="price-plan">Premium</div>
+      <div class="price-amount"><span id="priceAmount">4,99€</span></div>
+      <div class="price-period" id="pricePeriod">par mois</div>
+      <ul class="price-list">
+        <li>✓ Réponses illimitées</li>
+        <li>✓ Analyse de capture prioritaire</li>
+        <li>✓ Tous les tons débloqués</li>
+        <li>✓ Historique illimité</li>
+      </ul>
+      <button class="btn-primary" onclick="document.getElementById('signup').scrollIntoView({behavior:'smooth'})">Passer Premium</button>
+    </div>
+  </div>
+</section>
+
+<section class="signup" id="signup">
+  <div class="signup-card">
+    <div id="signupForm">
+      <h2>Rejoins Répartie</h2>
+      <p>Crée ton compte gratuit en 10 secondes.</p>
+      <div class="signup-form">
+        <input type="text" id="nameInput" placeholder="Prénom">
+        <span class="error-text" id="formError">Merci d'indiquer ton prénom.</span>
+        <div class="swipe-track" id="swipeTrack">
+          <div class="swipe-fill" id="swipeFill"></div>
+          <span class="swipe-label" id="swipeLabel">Glisse pour valider →</span>
+          <div class="swipe-thumb" id="swipeThumb">→</div>
+        </div>
+      </div>
+    </div>
+    <div id="signupSuccess">
+      <div class="checkmark">✓</div>
+      <h2>Tu es inscrit(e) !</h2>
+      <p>Bienvenue chez Répartie. On t'envoie un mail pour démarrer.</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-socials">
+    <a href="#" aria-label="Instagram">📷</a>
+    <a href="#" aria-label="TikTok">🎵</a>
+    <a href="#" aria-label="Snapchat">👻</a>
+    <a href="#" aria-label="X">✕</a>
+  </div>
+  © 2026 Répartie. Fait avec 💗 pour ne plus jamais bloquer sur une réponse.
+</footer>
+
+<script>
+/* ---------- Particules flottantes hero ---------- */
+const particlesEl = document.getElementById('particles');
+const emojis = ['💬','✨','💗','😉','🔥'];
+for(let i = 0; i < 10; i++){
+  const p = document.createElement('div');
+  p.className = 'particle';
+  p.textContent = emojis[i % emojis.length];
+  p.style.left = Math.random() * 100 + '%';
+  p.style.top = Math.random() * 100 + '%';
+  p.style.animationDelay = (Math.random() * 5) + 's';
+  p.style.animationDuration = (6 + Math.random() * 4) + 's';
+  particlesEl.appendChild(p);
+}
+
+/* ---------- Chat animé dans le mockup téléphone ---------- */
+const phoneScreen = document.getElementById('phoneScreen');
+const script = [
+  { from: 'her', text: "T'es bizarre toi 😂" },
+  { from: 'typing' },
+  { from: 'me', text: "Bizarre, ou juste plus intéressant que les autres ?" }
+];
+let scriptIndex = 0;
+function playScript(){
+  phoneScreen.innerHTML = '';
+  scriptIndex = 0;
+  step();
+}
+function step(){
+  if(scriptIndex >= script.length){
+    setTimeout(playScript, 2200);
+    return;
+  }
+  const item = script[scriptIndex];
+  if(item.from === 'typing'){
+    const dots = document.createElement('div');
+    dots.className = 'typing-dots';
+    dots.innerHTML = '<span></span><span></span><span></span>';
+    phoneScreen.appendChild(dots);
+    setTimeout(() => { dots.remove(); scriptIndex++; step(); }, 1100);
+  }else{
+    const bubble = document.createElement('div');
+    bubble.className = 'chat-bubble ' + item.from;
+    bubble.textContent = item.text;
+    phoneScreen.appendChild(bubble);
+    scriptIndex++;
+    setTimeout(step, 1000);
+  }
+}
+playScript();
+
+/* ---------- Compteurs animés (stats strip) ---------- */
+function animateCount(el){
+  const target = parseInt(el.dataset.target, 10);
+  const duration = 1400;
+  const start = performance.now();
+  function tick(now){
+    const progress = Math.min((now - start) / duration, 1);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    el.textContent = Math.floor(eased * target).toLocaleString('fr-FR');
+    if(progress < 1) requestAnimationFrame(tick);
+    else el.textContent = target.toLocaleString('fr-FR');
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ---------- Scroll reveal générique ---------- */
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      entry.target.classList.add('visible');
+      if(entry.target.querySelector('.stat-num')){
+        animateCount(entry.target.querySelector('.stat-num'));
+      }
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.3 });
+document.querySelectorAll('.reveal, .feature-card').forEach(el => revealObserver.observe(el));
+
+/* ---------- Démo interactive "Essaie maintenant" ---------- */
+let tryTone = 'Charmeur';
+document.querySelectorAll('.try-tone-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.try-tone-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    tryTone = chip.dataset.tone;
+  });
+});
+
+const tryInput = document.getElementById('tryInput');
+const tryBtn = document.getElementById('tryBtn');
+const tryResults = document.getElementById('tryResults');
+let tryUsesLeft = 3;
+
+tryBtn.addEventListener('click', async () => {
+  const msg = tryInput.value.trim();
+  if(!msg){
+    tryInput.style.borderColor = '#E8447B';
+    setTimeout(() => tryInput.style.borderColor = '', 700);
+    return;
+  }
+  if(tryUsesLeft <= 0){
+    tryResults.innerHTML = '<div class="try-reply">Tu as utilisé tes essais gratuits — <strong>crée ton compte</strong> pour continuer 👇</div>';
+    return;
+  }
+
+  tryBtn.disabled = true;
+  tryResults.innerHTML = '<div class="try-loading"><span></span><span></span><span></span></div>';
+
+  const promptText = 'Tu aides quelqu\'un à répondre à un message reçu sur Instagram/Snapchat de la part d\'une fille. Voici le message reçu : "' + msg + '"\n' +
+    'Ton demandé : ' + tryTone + '.\n' +
+    'Génère exactement 3 réponses courtes (une phrase ou deux max), naturelles, dans le ton "' + tryTone + '". Pas de guillemets, pas de numérotation, pas d\'explication.\n' +
+    'Réponds UNIQUEMENT avec un objet JSON de la forme {"replies": ["...", "...", "..."]} et rien d\'autre.';
+
+  try{
+    const response = await fetch("/.netlify/functions/generate-reply", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: promptText })
+    });
+    const data = await response.json();
+    const textBlock = data.content.find(b => b.type === "text");
+    let raw = textBlock ? textBlock.text : "{}";
+    raw = raw.replace(/```json|```/g, "").trim();
+    const parsed = JSON.parse(raw);
+    const replies = parsed.replies || [];
+    tryResults.innerHTML = replies.map(r => '<div class="try-reply">' + r + '</div>').join('');
+    tryUsesLeft -= 1;
+  }catch(err){
+    console.error(err);
+    tryResults.innerHTML = '<div class="try-reply">Oups, réessaie dans un instant.</div>';
+  }finally{
+    tryBtn.disabled = false;
+  }
+});
+
+/* ---------- Pricing toggle ---------- */
+const pricingToggle = document.getElementById('pricingToggle');
+const labelMonthly = document.getElementById('labelMonthly');
+const labelYearly = document.getElementById('labelYearly');
+const priceAmount = document.getElementById('priceAmount');
+const pricePeriod = document.getElementById('pricePeriod');
+let yearly = false;
+pricingToggle.addEventListener('click', () => {
+  yearly = !yearly;
+  pricingToggle.classList.toggle('on', yearly);
+  labelMonthly.classList.toggle('active', !yearly);
+  labelYearly.classList.toggle('active', yearly);
+  priceAmount.textContent = yearly ? '47,99€' : '4,99€';
+  pricePeriod.textContent = yearly ? 'par an' : 'par mois';
+});
+
+/* ---------- Formulaire d'inscription ---------- */
+const nameInput = document.getElementById('nameInput');
+const formError = document.getElementById('formError');
+const signupForm = document.getElementById('signupForm');
+const signupSuccess = document.getElementById('signupSuccess');
+
+function completeSignup(){
+  const name = nameInput.value.trim();
+  if(!name){
+    formError.style.display = 'block';
+    return false;
+  }
+  formError.style.display = 'none';
+  setTimeout(() => {
+    signupForm.style.display = 'none';
+    signupSuccess.style.display = 'block';
+  }, 350);
+  return true;
+}
+
+/* ---------- Swipe to confirm ---------- */
+const swipeTrack = document.getElementById('swipeTrack');
+const swipeThumb = document.getElementById('swipeThumb');
+const swipeFill = document.getElementById('swipeFill');
+const swipeLabel = document.getElementById('swipeLabel');
+
+let dragging = false;
+let trackWidth = 0;
+let thumbSize = 48;
+let maxX = 0;
+let completed = false;
+
+function getX(e){
+  return (e.touches ? e.touches[0].clientX : e.clientX);
+}
+
+function startDrag(e){
+  if(completed) return;
+  dragging = true;
+  trackWidth = swipeTrack.offsetWidth;
+  maxX = trackWidth - thumbSize - 6;
+  swipeTrack.classList.remove('snapping');
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('touchmove', onDrag, { passive:false });
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+}
+
+function onDrag(e){
+  if(!dragging) return;
+  e.preventDefault();
+  const rect = swipeTrack.getBoundingClientRect();
+  let x = getX(e) - rect.left - thumbSize / 2;
+  x = Math.max(0, Math.min(x, maxX));
+  swipeThumb.style.left = x + 'px';
+  swipeFill.style.width = (x + thumbSize + 6) + 'px';
+  swipeLabel.style.opacity = 1 - (x / maxX) * 0.8;
+}
+
+function endDrag(){
+  if(!dragging) return;
+  dragging = false;
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('mouseup', endDrag);
+  document.removeEventListener('touchend', endDrag);
+
+  const currentLeft = parseFloat(swipeThumb.style.left) || 0;
+  swipeTrack.classList.add('snapping');
+
+  if(currentLeft >= maxX * 0.88){
+    const ok = completeSignup();
+    if(ok){
+      completed = true;
+      swipeThumb.style.left = maxX + 'px';
+      swipeFill.style.width = '100%';
+      swipeLabel.textContent = 'Inscription validée ✓';
+      swipeTrack.classList.add('completed');
+    }else{
+      swipeThumb.style.left = '0px';
+      swipeFill.style.width = thumbSize + 'px';
+      swipeLabel.style.opacity = 1;
+    }
+  }else{
+    swipeThumb.style.left = '0px';
+    swipeFill.style.width = thumbSize + 'px';
+    swipeLabel.style.opacity = 1;
+  }
+}
+
+swipeThumb.addEventListener('mousedown', startDrag);
+swipeThumb.addEventListener('touchstart', startDrag, { passive:true });
+</script>
+
+</body>
+</html>
